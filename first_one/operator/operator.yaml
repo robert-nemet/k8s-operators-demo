@@ -1,0 +1,81 @@
+apiVersion: kudo.dev/v1beta1
+name: "first-one"
+operatorVersion: "0.1.1"
+appVersion: "1.7.9"
+kubernetesVersion: 1.18.1
+maintainers:
+  - name: Robert Nemet
+    email: robert.nemet@gmail.com
+url: https://kudo.dev
+tasks:
+  - name: first-one
+    kind: Apply
+    spec:
+      resources:
+        - deployment.yaml
+  - name: first-one-expose
+    kind: Apply
+    spec:
+      resources:
+        - service.yaml
+  - name: storage
+    kind: Apply
+    spec:
+      resources:
+        - volume0001.yaml
+  - name: pvc
+    kind: Apply
+    spec:
+      resources:
+        - pvc0001.yaml
+  - name: delete-deployment
+    kind: Delete
+    spec:
+      resources:
+        - deployment.yaml
+  - name: genwww
+    kind: Pipe
+    spec:
+      pod: pipe-pod.yaml
+      pipe:
+        - file: /tmp/index.html
+          kind: ConfigMap
+          key: indexHtml
+  - name: upwww
+    kind: Pipe
+    spec:
+      pod: pipe-update-pod.yaml
+      pipe:
+        - file: /tmp/index.html
+          kind: ConfigMap
+          key: indexHtml
+plans:
+  deploy:
+    strategy: serial
+    phases:
+      - name: main
+        strategy: serial #parallel
+        steps:
+          - name: storage
+            tasks:
+              - storage
+          - name: storage2
+            tasks:
+              - pvc
+          - name: genfiles
+            tasks:
+              - genwww
+          - name: server
+            tasks:
+              - first-one
+              - first-one-expose
+  updatemsg:
+    strategy: serial
+    phases:
+      - name: update-msg
+        stategy: serial
+        steps:
+          - name: update
+            tasks:
+              - upwww
+              - first-one

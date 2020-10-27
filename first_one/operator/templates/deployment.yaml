@@ -1,0 +1,31 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: nginx-deployment
+spec:
+  selector:
+    matchLabels:
+      app: nginx
+  replicas: {{ .Params.replicas }} # tells deployment to run 2 pods matching the template
+  template:
+    metadata:
+      labels:
+        app: nginx
+    spec:
+      volumes:
+        - name: pvc0001
+          persistentVolumeClaim:
+            claimName: pvc0001
+        - name: www
+          configMap:
+            name: {{ .Pipes.indexHtml }}
+      containers:
+        - name: nginx
+          image: nginx:{{ .AppVersion }}
+          ports:
+            - containerPort: 80
+          volumeMounts:
+            - mountPath: "/data"
+              name: pvc0001
+            - name: www
+              mountPath: /usr/share/nginx/html/
