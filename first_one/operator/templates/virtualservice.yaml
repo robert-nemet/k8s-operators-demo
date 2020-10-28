@@ -1,0 +1,19 @@
+apiVersion: networking.istio.io/v1alpha3
+kind: VirtualService
+metadata:
+  name: my-server-vs
+spec:
+  hosts:
+    - "*"
+  gateways:
+    - my-server-gw
+  http:
+    - route:
+      - destination:
+          host: my-server-svc
+          subset: original
+        weight: {{ .Params.traffic }}
+      - destination:
+          host: my-server-svc
+          subset: next
+        weight: {{ sub 100 .Params.traffic }}

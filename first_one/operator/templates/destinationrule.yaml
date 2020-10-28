@@ -1,0 +1,15 @@
+apiVersion: networking.istio.io/v1alpha3
+kind: DestinationRule
+metadata:
+  name: my-server-dr
+spec:
+  host: my-server-svc #my-server-{{ .Params.version }}-svc
+  subsets:
+    - name: next
+      labels:
+        app: my-server
+        version: {{ .Params.version }}
+    - name: original
+      labels:
+        app: my-server
+        version: {{ .Params.original }}

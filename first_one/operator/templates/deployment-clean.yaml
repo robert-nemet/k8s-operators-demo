@@ -1,0 +1,21 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: my-server-{{ .Params.original }}
+spec:
+  selector:
+    matchLabels:
+      app: my-server
+      version: {{ .Params.original }}
+  replicas: {{ .Params.replicas }}
+  template:
+    metadata:
+      labels:
+        app: my-server
+        version: {{ .Params.original }}
+    spec:
+      containers:
+        - name: my-server-{{ .Params.original }}
+          image: nginx
+          ports:
+            - containerPort: 80

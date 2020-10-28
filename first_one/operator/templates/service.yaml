@@ -5,11 +5,11 @@ metadata:
     heritage: kudo
     kudo.dev/instance: first-one-instance
     kudo.dev/operator: first-one
-  name: nginx-deployment
+  name: my-server-svc
 spec:
   ports:
-    - port: 80
+    - port: 8080
       protocol: TCP
       targetPort: 80
   selector:
-    app: nginx
+    app: my-server

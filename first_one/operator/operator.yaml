@@ -8,16 +8,39 @@ maintainers:
     email: robert.nemet@gmail.com
 url: https://kudo.dev
 tasks:
-  - name: first-one
+  - name: application
     kind: Apply
     spec:
       resources:
         - deployment.yaml
-  - name: first-one-expose
+        - service.yaml
+
+  - name: clean-application
+    kind: Delete
+    spec:
+      resources:
+        - deployment-clean.yaml
+
+  - name: network
     kind: Apply
     spec:
       resources:
-        - service.yaml
+        - destinationrule.yaml
+        - gateway.yaml
+        - virtualservice.yaml
+
+  - name: updatevs
+    kind: Apply
+    spec:
+      resources:
+        - virtualservice.yaml
+
+  - name: updatedr
+    kind: Apply
+    spec:
+      resources:
+        - destinationrule.yaml
+
   - name: storage
     kind: Apply
     spec:
@@ -28,12 +51,7 @@ tasks:
     spec:
       resources:
         - pvc0001.yaml
-  - name: delete-deployment
-    kind: Delete
-    spec:
-      resources:
-        - deployment.yaml
-  - name: genwww
+  - name: generate-www
     kind: Pipe
     spec:
       pod: pipe-pod.yaml
@@ -41,34 +59,59 @@ tasks:
         - file: /tmp/index.html
           kind: ConfigMap
           key: indexHtml
-  - name: upwww
-    kind: Pipe
-    spec:
-      pod: pipe-update-pod.yaml
-      pipe:
-        - file: /tmp/index.html
-          kind: ConfigMap
-          key: indexHtml
+
 plans:
   deploy:
     strategy: serial
     phases:
       - name: main
-        strategy: serial #parallel
+        strategy: serial
         steps:
           - name: storage
             tasks:
               - storage
-          - name: storage2
+          - name: storage-pvc
             tasks:
               - pvc
           - name: genfiles
             tasks:
-              - genwww
+              - generate-www
           - name: server
             tasks:
-              - first-one
-              - first-one-expose
+              - application
+          - name: network
+            tasks:
+              - network
+  deploy-new:
+    strategy: serial
+    phases:
+        - name: main
+          strategy: serial
+          steps:
+            - name: storage
+              tasks:
+                - storage
+            - name: storage-pvc
+              tasks:
+                - pvc
+            - name: genfiles
+              tasks:
+                - generate-www
+            - name: server
+              tasks:
+                - application
+                - updatedr
+
+  update-vs:
+    strategy: parallel
+    phases:
+      - name: main
+        strategy: serial
+        steps:
+          - name: main
+            tasks:
+              - updatevs
+
   updatemsg:
     strategy: serial
     phases:
@@ -77,5 +120,15 @@ plans:
         steps:
           - name: update
             tasks:
-              - upwww
-              - first-one
+              - generate-www
+              - application
+
+  cleanup-old:
+    strategy: serial
+    phases:
+      - name: terminate
+        strategy: serial
+        steps:
+          - name: terminate-dep
+            tasks:
+              - clean-application

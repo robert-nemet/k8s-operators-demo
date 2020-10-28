@@ -4,6 +4,17 @@ parameters:
     description: Number of replicas that should be run as part of the deployment
     default: 2
   - name: message
-    description: cow moos
-    default: Some+message
+    description: cow says
+    default: Good+old+version+01
     trigger: updatemsg
+  - name: version
+    description: app version
+    default: v1
+    trigger: deploy-new
+  - name: original
+    description: app version
+    default: v1 # v2
+  - name: traffic
+    description: traffic percentage
+    default: 100
+    trigger: update-vs

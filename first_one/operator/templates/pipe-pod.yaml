@@ -9,7 +9,7 @@ spec:
       image: busybox
       command: [ "/bin/sh", "-c" ]
       args:
-        - wget -O /tmp/index.html 'http://cowsay.morecode.org/say?message=Good+things+come+when+you+least+expect+them&format=html'
+        - wget -O /tmp/index.html 'http://cowsay.morecode.org/say?message={{ .Params.message }}&format=html'
       volumeMounts:
         - name: shared-data
           mountPath: /tmp
