@@ -43,7 +43,7 @@ Recording repeatable manual steps executed by the human operator like:
 
 It is complicated as one need to define proper CRD or API and to follow complicated rules and schemas
 
-### KUDO (Kubernetes Universal Declarative Operator)
+### [KUDO](https://kudo.dev/) (Kubernetes Universal Declarative Operator)
 
  - declarative
  - feels like writing yaml configuration
@@ -53,20 +53,20 @@ It is complicated as one need to define proper CRD or API and to follow complica
  - opinionated way to develop operator: focus on life cycle
  - no need for programming skills
 
-### Metacontroller
+### [Metacontroller](https://metacontroller.app/)
 
  - webhooks
  - easy to define behaviour of CRDs
  - could be complex for managing operator life cycle
  - more freedom than the KUDO
  
-### Kubebuilder
+### [Kubebuilder](https://github.com/kubernetes-sigs/kubebuilder)
 
  - building k8s APIs with CRDs
  - requires knowledge of the Go
  - opinionated way to develop operator
  
-### Operator framework
+### [Operator framework](https://sdk.operatorframework.io/)
  
  - support for full and detailed control for developing operator
  - support for full control over operator life cycle
